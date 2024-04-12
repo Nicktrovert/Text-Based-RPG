@@ -28,6 +28,14 @@ class Player:
         for room in room.Rooms:
             print(f"\nRoom-{roomNumber}-")
             roomNumber += 1
+
+    def EnterRoom(self, number):
+        os.system('cls')
+        print("\nYou entered The room.\n")
+        selected_room = self.CurrentRoom.Rooms[int(number)]
+        selected_room.Generate()
+        selected_room.GenerateRooms()
+        self.CurrentRoom = selected_room
     def TakeItem(self, number):
         os.system('cls')
         selected_item = self.CurrentRoom.Loot[int(number)]
@@ -115,25 +123,24 @@ class Room:
     def __init__(self):
         return
     def GenerateLoot(self):
-        AmountOfLoot = random.randint(0, 5)
+        AmountOfLoot = random.randint(0, 2)
         for i in range(AmountOfLoot):
             RandomItemFromLootTable = LootTable[random.randint(0, len(LootTable)-1)]
             newLoot = Item(RandomItemFromLootTable.Name, RandomItemFromLootTable.Description, RandomItemFromLootTable.generate_amount(), RandomItemFromLootTable.Rarity)
             self.Loot.append(newLoot)
 
     def GenerateEnemies(self):
-        AmountOfEnemies = random.randint(0, 3)
+        AmountOfEnemies = random.randint(0, 2)
         for i in range(AmountOfEnemies):
             RandomEnemyFromLootTable = EnemyTable[random.randint(0, len(EnemyTable)-1)]
             newEnemie = Enemy(RandomEnemyFromLootTable.Name, RandomEnemyFromLootTable.Description, RandomEnemyFromLootTable.Health, RandomEnemyFromLootTable.AttackDamage)
             self.Enemies.append(newEnemie)
 
     def GenerateRooms(self):
-        AmountOfRooms = random.randint(1, 3)
+        AmountOfRooms = random.randint(1, 2)
         for i in range(AmountOfRooms):
             newRoom = Room()
             newRoom.Rooms.append(self)
-            newRoom.Generate()
             self.Rooms.append(Room)
 
     def Generate(self):
@@ -176,7 +183,12 @@ if __name__ == '__main__':
     GameIsRunning = True
 
     while GameIsRunning == True:
-        UserInput = input("\nWhat do you want to do?\n[1. Inspect the Room]\n[2. Take an Item]\n[3. Check your Inventory]\n")
+        UserInput = input("\nWhat do you want to do?"
+                          "\n[1. Inspect the Room]"
+                          "\n[2. Take an Item]"
+                          "\n[3. Check your Inventory]"
+                          "\n[4. Enter a Room]"
+                          "\n")
 
         match UserInput:
             case "1":
@@ -185,7 +197,7 @@ if __name__ == '__main__':
                 if (len(player.CurrentRoom.Loot) != 0):
                     UserInput2 = input(f"\nWhat item do you want to pick? [0 - {len(player.CurrentRoom.Loot) - 1}]\n")
                     try:
-                        if (int(UserInput2) <= len(player.CurrentRoom.Loot)):
+                        if (int(UserInput2) <= len(player.CurrentRoom.Loot) and int(UserInput2) >= 0):
                             player.TakeItem(UserInput2)
                         else:
                             os.system('cls')
@@ -198,5 +210,16 @@ if __name__ == '__main__':
                     print("\nNo Items to take!\n")
             case "3":
                 player.CheckInventory()
+            case "4":
+                UserInput2 = input(f"\nWhat room do you want to enter?")
+                try:
+                    if (int(UserInput2) <= len(player.CurrentRoom.Rooms) and int(UserInput2) >= 0):
+                        player.EnterRoom(UserInput2)
+                    else:
+                        os.system('cls')
+                        print("\nThat Room does not exist!\n")
+                except:
+                    os.system('cls')
+                    print("\nInvalid Input!\n")
             case _:
                 print("Invalid Input!")
